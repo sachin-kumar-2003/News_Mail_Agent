@@ -1,11 +1,12 @@
 import os
+import json
 from fastapi import FastAPI
 from openai import OpenAI
 from dotenv import load_dotenv
 load_dotenv()
 
 from news import national_news, international_news, sports_news, technology_news
-
+from system_prompt import system_prompt
 
 
 api_key = os.getenv("GEMINI_API_KEY")
@@ -14,40 +15,70 @@ client = OpenAI(
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
 )
 
-tools =[
-    {
-        "name":"national_news",
+tools = {
+    "national_news": {
         "function": national_news,
-        "description":"Fetches the latest national news articles."
+        "description": "Fetches the latest national news headlines."
     },
-    {
-        "name":"international_news",
+    "international_news": {
         "function": international_news,
-        "description":"Fetches the latest international news articles."
+        "description": "Fetches the latest international news headlines."
     },
-    {
-        "name":"sports_news",
+    "sports_news": {
         "function": sports_news,
-        "description":"Fetches the latest sports news articles."
+        "description": "Fetches the latest sports news headlines."
     },
-    {
-        "name":"technology_news",
+    "technology_news": {
         "function": technology_news,
-        "description":"Fetches the latest technology news articles."
+        "description": "Fetches the latest technology news headlines."
     }
+}
+
+messages = [
+    {
+            "role": "system",
+            "content": system_prompt
+        },
+        {
+            "role": "user", 
+            "content": input("enter your query >> ")
+        }
 ]
 
 
-# response = client.chat.completions.create(
-#     model="gemini-3-flash-preview",
-#     messages=[
-#         {
-#             "role":"user",
-#             "content":"hey"
-#         }
-#     ]
-# )
-# print(response.choices[0].message.content)
+while True:
+    response = client.chat.completions.create(
+        model="gemini-3-flash-preview",
+        messages=messages,
+    )
+
+    assistant_content = response.choices[0].message.content
+
+    parsed_response = json.loads(assistant_content)
+    print(parsed_response)
+    step = parsed_response["step"]
+    
+    messages.append({
+        "role": "assistant",
+        "content": json.dumps(parsed_response)
+    })
+
+    print("Assistant Response:", assistant_content)
+
+    if step == "plan":
+        print("Planning:", parsed_response.get("content"))
+    elif step == "action":
+        function_name = parsed_response.get("function")
+        if not function_name or function_name not in tools:
+            print("Error: Invalid function name.")
+            break
+        all_news = tools[function_name]["function"]()
+        messages.append({"role":"user", "content": f"make a concise summary of all_news : {all_news}"})
+    elif step == "observe":
+        observation = parsed_response.get("content")
+        print("Observation:", observation)
+        messages.append({"role":"user", "content": f"Observation: {observation}"})
+        break
 
 
 

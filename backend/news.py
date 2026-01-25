@@ -29,7 +29,7 @@ def national_news():
             "description": description
         })
 
-    return all_news
+    return all_news[:5]
 
 def international_news():
     url = "https://www.indiatoday.in/world"
@@ -59,9 +59,9 @@ def international_news():
             "description": description
         })
 
-    return all_news
+    return all_news[:5]
 
-print(international_news()[0])
+# print(international_news()[0])
 
 def sports_news():
     url = "https://www.indiatoday.in/sports"
@@ -91,7 +91,7 @@ def sports_news():
             "description": description
         })
 
-    return all_news
+    return all_news[:2]
 
 # print(sports_news()[5])
 
@@ -123,5 +123,6 @@ def technology_news():
             "description": description
         })
 
-    return all_news
+    return all_news[:5]
+
 # print(technology_news()[0])
