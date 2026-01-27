@@ -5,7 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
 
 load_dotenv()
-def send_mail_reciever(subject, allnews, ):
+def send_mail_reciever(subject, allnews ):
     
     sender_email_id = os.getenv("SENDER_EMAIL_ID")
     sender_email_password = os.getenv("SENDER_EMAIL_PASSWORD")
