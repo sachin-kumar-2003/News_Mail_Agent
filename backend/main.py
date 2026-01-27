@@ -32,10 +32,10 @@ messages = [
             "role": "user", 
             "content": user_query
         },
-        
 ]
+
+
 # print(technology_news())
-i = 0
 while True:
     response = client.chat.completions.create(
         model="meta-llama/llama-3.3-70b-instruct:free",
@@ -43,7 +43,6 @@ while True:
     )
 
     raw = response.choices[0].message.content
-    print(f"\nresponse from bot = {raw}")
 
     if not raw or raw.strip() == "":
         print("Empty model response — stopping.")
@@ -67,7 +66,6 @@ while True:
         fn_name = res["function"]
         fn = tools[fn_name]
         observation = fn()
-        print(f"\nObservation from tool '{fn_name}': {observation}\n")
 
         messages.append({
             "role": "user",
@@ -86,13 +84,8 @@ while True:
         print("\nFINAL ANSWER:\n", res["content"])
         break
 
-    
-
-
-
 app = FastAPI()
 
 @app.get("/")
 def home():
     return {"message": "Welcome to the News Mail Agent Backend!"}
-

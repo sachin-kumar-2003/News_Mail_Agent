@@ -91,7 +91,7 @@ def sports_news():
             "description": description
         })
 
-    return all_news[:2]
+    return all_news[:5]
 
 # print(sports_news()[5])
 
@@ -126,5 +126,5 @@ def technology_news():
         for i in range(len(all_news)):
             news[f"news_{i+1}"] = all_news[i]
 
-    return dict(list(news.items())[:3])
+    return all_news[:5]
 
