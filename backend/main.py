@@ -7,79 +7,86 @@ load_dotenv()
 
 from news import national_news, international_news, sports_news, technology_news
 from system_prompt import system_prompt
+from check_json import fixed_json
 
 
 api_key = os.getenv("GEMINI_API_KEY")
 client = OpenAI(
-    api_key=api_key,
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+  base_url="https://openrouter.ai/api/v1",
+  api_key=api_key,
 )
-
 tools = {
-    "national_news": {
-        "function": national_news,
-        "description": "Fetches the latest national news headlines."
-    },
-    "international_news": {
-        "function": international_news,
-        "description": "Fetches the latest international news headlines."
-    },
-    "sports_news": {
-        "function": sports_news,
-        "description": "Fetches the latest sports news headlines."
-    },
-    "technology_news": {
-        "function": technology_news,
-        "description": "Fetches the latest technology news headlines."
+        "national_news": national_news,
+        "international_news": international_news,
+        "sports_news": sports_news,
+        "technology_news": technology_news
     }
-}
 
+user_query = input("enter your query = ")
 messages = [
-    {
+        {
             "role": "system",
             "content": system_prompt
         },
         {
             "role": "user", 
-            "content": input("enter your query >> ")
-        }
+            "content": user_query
+        },
+        
 ]
-
-
+# print(technology_news())
+i = 0
 while True:
     response = client.chat.completions.create(
-        model="gemini-3-flash-preview",
+        model="meta-llama/llama-3.3-70b-instruct:free",
         messages=messages,
     )
 
-    assistant_content = response.choices[0].message.content
+    raw = response.choices[0].message.content
+    print(f"\nresponse from bot = {raw}")
 
-    parsed_response = json.loads(assistant_content)
-    print(parsed_response)
-    step = parsed_response["step"]
-    
-    messages.append({
-        "role": "assistant",
-        "content": json.dumps(parsed_response)
-    })
-
-    print("Assistant Response:", assistant_content)
-
-    if step == "plan":
-        print("Planning:", parsed_response.get("content"))
-    elif step == "action":
-        function_name = parsed_response.get("function")
-        if not function_name or function_name not in tools:
-            print("Error: Invalid function name.")
-            break
-        all_news = tools[function_name]["function"]()
-        messages.append({"role":"user", "content": f"make a concise summary of all_news : {all_news}"})
-    elif step == "observe":
-        observation = parsed_response.get("content")
-        print("Observation:", observation)
-        messages.append({"role":"user", "content": f"Observation: {observation}"})
+    if not raw or raw.strip() == "":
+        print("Empty model response — stopping.")
         break
 
+    res = fixed_json(raw)
+    print("parsed:", res)
+
+    messages.append({"role": "assistant", "content": raw})
+
+    step = res.get("step")
+
+    if step == "plan":
+        messages.append({
+            "role": "user",
+            "content": "Continue to the next step."
+        })
+        continue
+
+    if step == "action":
+        fn_name = res["function"]
+        fn = tools[fn_name]
+        observation = fn()
+        print(f"\nObservation from tool '{fn_name}': {observation}\n")
+
+        messages.append({
+            "role": "user",
+            "content": f"{observation} Provide the final answer output in more structure way"
+        })
+        continue
+
+    if step == "observe":
+        messages.append({
+            "role": "user",
+            "content": "Provide the final answer."
+        })
+        continue
+
+    if step == "output":
+        print("\nFINAL ANSWER:\n", res["content"])
+        break
+
+    
 
 
 

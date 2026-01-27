@@ -122,7 +122,9 @@ def technology_news():
             "heading": title,
             "description": description
         })
+        news = {}
+        for i in range(len(all_news)):
+            news[f"news_{i+1}"] = all_news[i]
 
-    return all_news[:5]
+    return dict(list(news.items())[:3])
 
-# print(technology_news()[0])
