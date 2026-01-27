@@ -8,6 +8,10 @@ load_dotenv()
 from news import national_news, international_news, sports_news, technology_news
 from system_prompt import system_prompt
 from check_json import fixed_json
+from send_mail import send_mail_reciever
+
+# for mail section
+subject = ""
 
 
 api_key = os.getenv("GEMINI_API_KEY")
@@ -64,6 +68,7 @@ while True:
 
     if step == "action":
         fn_name = res["function"]
+        subject = fn_name
         fn = tools[fn_name]
         observation = fn()
 
@@ -82,6 +87,8 @@ while True:
 
     if step == "output":
         print("\nFINAL ANSWER:\n", res["content"])
+        send_mail_reciever(subject=subject, allnews=res["content"])
+        
         break
 
 app = FastAPI()
