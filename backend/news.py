@@ -61,8 +61,6 @@ def international_news():
 
     return all_news[:5]
 
-# print(international_news()[0])
-
 def sports_news():
     url = "https://www.indiatoday.in/sports"
     response = requests.get(url)
@@ -92,8 +90,6 @@ def sports_news():
         })
 
     return all_news[:5]
-
-# print(sports_news()[5])
 
 def technology_news():
     url = "https://www.indiatoday.in/technology"
@@ -127,4 +123,3 @@ def technology_news():
             news[f"news_{i+1}"] = all_news[i]
 
     return all_news[:5]
-

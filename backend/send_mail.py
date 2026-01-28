@@ -5,11 +5,11 @@ from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
 
 load_dotenv()
-def send_mail_reciever(subject, allnews ):
+def send_mail_reciever(subject, allnews, receivermail ):
     
     sender_email_id = os.getenv("SENDER_EMAIL_ID")
     sender_email_password = os.getenv("SENDER_EMAIL_PASSWORD")
-    receiver_mail = "sachinkumardyno@gmail.com"
+    receiver_mail = receivermail
 
     msg = MIMEMultipart()
     msg["From"] = sender_email_id
@@ -34,6 +34,5 @@ def send_mail_reciever(subject, allnews ):
     server.login(sender_email_id, sender_email_password)
 
     server.sendmail(sender_email_id, receiver_mail, msg.as_string())
-    print("Mail sent successfully!")
-
     server.quit()
+    return {"message": "Welcome to the News Mail Agent Backend!"}
