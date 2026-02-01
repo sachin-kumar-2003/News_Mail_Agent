@@ -4,7 +4,7 @@ import { IoSend } from 'react-icons/io5';
 import axios from "axios"
 
 function Main() {
-  const serverUrl = "http://127.0.0.1:8000"
+  const serverUrl = import.meta.env.VITE_SERVER_URL;
   const [usermail, setMail] = useState("")
   const [userquery, setQuery] = useState("")
 
