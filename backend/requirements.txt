@@ -4,6 +4,7 @@ anyio==4.12.1
 beautifulsoup4==4.14.3
 certifi==2026.1.4
 charset-normalizer==3.4.4
+click==8.3.1
 colorama==0.4.6
 distro==1.9.0
 dotenv==0.9.9
@@ -25,3 +26,4 @@ tqdm==4.67.1
 typing-inspection==0.4.2
 typing_extensions==4.15.0
 urllib3==2.6.3
+uvicorn==0.40.0
