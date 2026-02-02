@@ -41,7 +41,8 @@ def home():
 
 @app.post("/news")
 async def news(data: NewRequest):
-    api_key = os.getenv("GEMINI_API_KEY")
+    print("api is calling...")
+    api_key = os.getenv("OPENROUTER_API_KEY")
     client = OpenAI(
         base_url="https://openrouter.ai/api/v1",
         api_key=api_key,
@@ -71,12 +72,17 @@ async def news(data: NewRequest):
 
 
     while True:
-        response = client.chat.completions.create(
-            model="meta-llama/llama-3.3-70b-instruct:free",
-            messages=messages,
-        )
-        print(response)
-        raw = response.choices[0].message.content
+        raw = ""
+        try:
+            response = client.chat.completions.create(
+                model="google/gemini-3-flash-preview",
+                messages=messages,
+                max_tokens=512,
+            )
+            raw = response.choices[0].message.content
+            print(raw)        
+        except Exception as e:
+            print("the error is ", e)
 
         if not raw or raw.strip() == "":
             print("Empty model response — stopping.")

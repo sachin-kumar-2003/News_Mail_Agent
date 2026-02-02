@@ -5,6 +5,7 @@ import axios from "axios"
 
 function Main() {
   const serverUrl = import.meta.env.VITE_SERVER_URL;
+  // const serverUrl = "http://127.0.0.1:8000"
   const [usermail, setMail] = useState("")
   const [userquery, setQuery] = useState("")
 
@@ -12,6 +13,10 @@ function Main() {
     console.log("api calling...")
     console.log("user mail is ", usermail)
     console.log("user query is ", userquery)
+    if(usermail == "" || userquery == ""){
+      alert("check your mail or query")
+      return;
+    }
 
     await axios.post(`${serverUrl}/news`, {
       usermail: usermail,
